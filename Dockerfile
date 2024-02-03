@@ -1,8 +1,6 @@
 FROM rust:1.75.0-bookworm as builder
 WORKDIR /app
-COPY ./src ./src
-COPY ./Cargo.lock ./
-COPY ./Cargo.toml ./
+COPY . .
 RUN cargo install --path .
 
 

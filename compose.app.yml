@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app: 
+    image: gym-register-api:latest
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "${CONTAINER_PORT}:${APP_PORT}"
+    develop:
+      watch:
+        - action: rebuild
+          path: .

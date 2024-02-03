@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app: 
+    image: gym-register-api-dev:latest
+    extends:
+      file: compose.app.yml
+      service: app
+    container_name: gym-register-api-dev
+    networks:
+      - gym-register-api-dev
+
+networks:
+  gym-register-api-dev: 
