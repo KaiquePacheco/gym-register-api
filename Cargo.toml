@@ -1,0 +1,8 @@
+[package]
+name = "gym-register-api"
+version = "0.1.0"
+edition = "2021"
+authors = ["Kaique Pacheco"]
+
+[dependencies]
+rocket = { version = "0.5.0", features = ["json"] }
