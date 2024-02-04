@@ -1,9 +1,14 @@
 use std::env;
 
 use diesel_async::{
-    pooled_connection::{deadpool::{Object, Pool}, AsyncDieselConnectionManager},
+    pooled_connection::{
+        deadpool::{Object, Pool},
+        AsyncDieselConnectionManager,
+    },
     AsyncPgConnection,
 };
+
+pub type ConnectionPool = Pool<AsyncPgConnection>;
 
 pub fn create_connection_pool() -> Pool<AsyncPgConnection> {
     let url = env::var("DATABASE_URL").expect("DATABASE_URL environment variable not found");

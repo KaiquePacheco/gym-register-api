@@ -1,7 +1,9 @@
 pub mod database;
+pub mod schema;
 
 use dotenvy::dotenv_override;
-use rocket::{get, launch, routes, Rocket};
+use database::ConnectionPool;
+use rocket::{data, get, launch, routes, Rocket};
 
 #[get("/")]
 async fn hello_world() -> &'static str {
@@ -12,5 +14,9 @@ async fn hello_world() -> &'static str {
 fn rocket() -> _ {
     let _ = dotenv_override();
 
-    Rocket::build().mount("/", routes![hello_world])
+    let pool: ConnectionPool = database::create_connection_pool();
+
+    Rocket::build()
+        .attach(pool)
+        .mount("/", routes![hello_world])
 }
