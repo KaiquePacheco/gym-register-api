@@ -1,3 +1,5 @@
+pub mod database;
+
 use dotenvy::dotenv_override;
 use rocket::{get, launch, routes, Rocket};
 
