@@ -6,3 +6,6 @@ authors = ["Kaique Pacheco"]
 
 [dependencies]
 rocket = { version = "0.5.0", features = ["json"] }
+dotenvy = { version = "0.15.7" }
+diesel = { version = "2.1.0", features = ["postgres", "r2d2"] }
+diesel-async = { version = "0.3.1", features = ["postgres"] }
