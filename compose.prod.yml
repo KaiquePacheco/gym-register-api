@@ -1,5 +1,8 @@
 version: '3.8'
 
+include:
+  - compose.db.yml
+
 services:
   app: 
     image: gym-register-api-prod:latest

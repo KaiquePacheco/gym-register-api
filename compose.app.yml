@@ -1,5 +1,8 @@
 version: '3.8'
 
+include:
+  - compose.db.yml
+
 services:
   app: 
     image: gym-register-api:latest
@@ -11,6 +14,10 @@ services:
       - .env
     ports:
       - "${CONTAINER_PORT}:${APP_PORT}"
+    networks:
+      - gym-register-db
+    depends_on:
+      - db
     develop:
       watch:
         - action: rebuild

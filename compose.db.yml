@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db: 
+    image: postgres:${POSTGRES_VERSION}-bookworm
+    expose:
+      - ${DATABASE_PORT}
+    ports:
+      - ${DATABASE_PUBLIC_PORT}:${DATABASE_PORT}
+    volumes:
+      - gym-register-db-data:/var/lib/postgresql/data
+    env_file: 
+      - .env
+    networks:
+      - gym-register-db
+    environment:
+      POSTGRES_DB: ${DATABASE_DB}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+
+networks:
+  gym-register-db:
+
+volumes:
+  gym-register-db-data:
