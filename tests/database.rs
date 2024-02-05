@@ -1,4 +1,3 @@
-use diesel_async::RunQueryDsl;
 use dotenvy::dotenv_override;
 use rocket::async_test;
 

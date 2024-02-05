@@ -1,10 +1,7 @@
 use std::env;
 
 use diesel_async::{
-    pooled_connection::{
-        deadpool::{Object, Pool},
-        AsyncDieselConnectionManager,
-    },
+    pooled_connection::{deadpool::Pool, AsyncDieselConnectionManager},
     AsyncPgConnection,
 };
 
