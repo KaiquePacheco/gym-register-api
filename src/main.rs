@@ -2,6 +2,7 @@ pub mod database;
 pub mod schema;
 
 pub mod auth;
+pub mod users;
 
 use database::ConnectionPool;
 use dotenvy::dotenv_override;
