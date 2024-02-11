@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use std::error::Error as ErrorTrait;
 
-use super::super::schema::user;
+use super::super::schema::users;
 
 use super::dtos::User;
 
@@ -13,9 +13,9 @@ pub async fn find_by_email(
 
     email: &str,
 ) -> Result<Vec<User>, Error> {
-    user::table
+    users::table
         .select(User::as_select())
-        .filter(user::email.eq(email))
+        .filter(users::email.eq(email))
         .get_results(&mut conn)
         .await
 }
@@ -35,7 +35,7 @@ pub async fn create(
         id: Uuid::new_v4(),
     };
 
-    insert_into(user::table)
+    insert_into(users::table)
         .values(&user)
         .execute(&mut conn)
         .await?;
