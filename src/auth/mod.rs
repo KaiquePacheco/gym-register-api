@@ -1,6 +1,7 @@
 mod custom_errs;
 mod dtos;
 pub mod token;
+pub mod validators;
 
 use std::ops::Deref;
 
