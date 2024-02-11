@@ -5,7 +5,7 @@ pub mod validators;
 
 use std::ops::Deref;
 
-use dtos::{SignIn, SignUp};
+use dtos::forms::{SignIn, SignUp};
 use rocket::{
     form::{Form, Strict},
     post,

@@ -1,6 +1,6 @@
-use super::super::users::{self, dtos::UserData};
+use super::super::users;
 use super::custom_errs::sign_in::SignInError;
-use super::dtos::{SignIn, TokenContent};
+use super::dtos::{forms::SignIn, token::TokenContent};
 
 use hmac::Hmac;
 use jwt::SignWithKey;
@@ -32,14 +32,4 @@ pub async fn sign_token<'r>(
     }
 
     Err(SignInError::WrongPassword)
-}
-
-impl From<UserData> for TokenContent {
-    fn from(value: UserData) -> Self {
-        Self {
-            user_id: value.id,
-            username: value.username,
-            email: value.email,
-        }
-    }
 }
