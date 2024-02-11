@@ -1,6 +1,6 @@
-pub mod token;
 mod custom_errs;
 mod dtos;
+pub mod token;
 
 use std::ops::Deref;
 
@@ -22,15 +22,15 @@ pub async fn sign_in<'r>(
     configs: &State<Configs>,
 
     sign_in_form: Form<Strict<SignIn<'_>>>,
-) -> Result<status::Accepted<String>, status::BadRequest<&'r str>> {
+) -> Result<status::Accepted<String>, status::BadRequest<String>> {
     let conn = pool.get().await.unwrap();
 
     let sign_in_form = sign_in_form.deref().deref();
-    let sign_token_result = token::sign_token(sign_in_form, &configs.jwt_key, conn).await;
+    let sign_in_result = token::sign_token(sign_in_form, &configs.jwt_key, conn).await;
 
-    match sign_token_result {
+    match sign_in_result {
         Ok(token) => Ok(status::Accepted(token)),
-        Err(_) => Err(status::BadRequest("Wrong email or password")),
+        Err(e) => Err(status::BadRequest(e.to_string())),
     }
 }
 

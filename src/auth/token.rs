@@ -1,6 +1,6 @@
-use super::dtos::{SignIn, TokenContent};
-use super::custom_errs::SignInError;
 use super::super::users::{self, dtos::UserData};
+use super::custom_errs::sign_in::SignInError;
+use super::dtos::{SignIn, TokenContent};
 
 use hmac::Hmac;
 use jwt::SignWithKey;
@@ -8,27 +8,30 @@ use sha2::Sha256;
 
 use diesel_async::{pooled_connection::deadpool::Object, AsyncPgConnection};
 
-use std::error::Error;
-
-pub async fn sign_token(
+pub async fn sign_token<'r>(
     sign_in: &SignIn<'_>,
     key: &Hmac<Sha256>,
 
     conn: Object<AsyncPgConnection>,
-) -> Result<String, Box<dyn Error>> {
-    let user_datas = users::utils::find_by_email(conn, sign_in.email).await?;
+) -> Result<String, SignInError> {
+    let found_users = users::utils::find_by_email(conn, sign_in.email).await?;
 
-    for data in user_datas {
+    if found_users.is_empty() {
+        return Err(SignInError::WrongEmail);
+    }
+
+    for data in found_users {
         if !bcrypt::verify(sign_in.password, &data.password_hash)? {
             continue;
         }
+
         match TokenContent::from(data).sign_with_key(key) {
             Ok(token) => return Ok(token),
             Err(_) => (),
         }
     }
 
-    return Err(Box::new(SignInError {}));
+    Err(SignInError::WrongPassword)
 }
 
 impl From<UserData> for TokenContent {
