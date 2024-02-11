@@ -27,7 +27,7 @@ pub async fn create(
     email: String,
     password: String,
     bcrypt_cost: u32,
-) -> Result<(), Box<dyn ErrorTrait>> {
+) -> Result<User, Box<dyn ErrorTrait>> {
     let user = User {
         email,
         username,
@@ -36,9 +36,9 @@ pub async fn create(
     };
 
     insert_into(user::table)
-        .values(user)
+        .values(&user)
         .execute(&mut conn)
         .await?;
 
-    Ok(())
+    Ok(user)
 }

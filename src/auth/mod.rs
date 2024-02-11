@@ -1,5 +1,6 @@
 mod custom_errs;
 mod dtos;
+pub mod register;
 pub mod token;
 pub mod validators;
 
@@ -14,7 +15,7 @@ use rocket::{
     State,
 };
 
-use super::{config::Configs, database::ConnectionPool, users};
+use super::{config::Configs, database::ConnectionPool};
 
 #[post("/signin", data = "<sign_in_form>")]
 pub async fn sign_in<'r>(
@@ -25,7 +26,7 @@ pub async fn sign_in<'r>(
 ) -> Result<status::Accepted<String>, status::BadRequest<String>> {
     let conn = pool.get().await.unwrap();
 
-    let sign_in_form = sign_in_form.deref().deref();
+    let sign_in_form = (*sign_in_form).deref();
     let sign_in_result = token::sign_token(sign_in_form, &configs.jwt_key, conn).await;
 
     match sign_in_result {
@@ -40,20 +41,15 @@ pub async fn sign_up(
     configs: &State<Configs>,
 
     sign_up_form: Form<Strict<SignUp<'_>>>,
-) -> Result<status::Accepted<&'static str>, status::Custom<String>> {
+) -> Result<status::Accepted<String>, status::Custom<String>> {
     let conn = pool.get().await.unwrap();
 
-    let create_user_result = users::utils::create(
-        conn,
-        sign_up_form.username.into(),
-        sign_up_form.email.into(),
-        sign_up_form.password.into(),
-        configs.bcrypt_cost,
-    )
-    .await;
+    let sign_up_form = (*sign_up_form).deref();
+    let create_user_result =
+        register::register(sign_up_form, &configs.jwt_key, configs.bcrypt_cost, conn).await;
 
     match create_user_result {
-        Ok(()) => Ok(status::Accepted("User sucessfully created")),
+        Ok(token) => Ok(status::Accepted(token)),
         Err(e) => Err(status::Custom(Status::InternalServerError, e.to_string())),
     }
 }
