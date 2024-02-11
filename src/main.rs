@@ -10,7 +10,7 @@ use database::ConnectionPool;
 use rocket::{launch, routes, Rocket};
 
 #[launch]
-fn rocket() -> _ {
+pub fn rocket() -> _ {
     let configs = Configs::default();
     let pool: ConnectionPool = database::create_connection_pool(&configs);
 
