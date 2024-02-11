@@ -9,6 +9,8 @@ pub struct Configs {
 
     pub db_url: String,
     pub db_max_conns: usize,
+
+    pub bcrypt_cost: u32,
 }
 
 impl Default for Configs {
@@ -25,10 +27,16 @@ impl Default for Configs {
             env::var("JWT_SECRET").expect("DATABASE_URL environment variable not found");
         let jwt_key = Hmac::new_from_slice(jwt_secret.as_bytes()).unwrap();
 
+        let bcrypt_cost = env::var("BCRYPT_COST")
+            .expect("BCRYPT_COST environment variable not found")
+            .parse()
+            .expect("Could not parse to unsigned integer the environment variable 'DATABASE_MAX_CONNECTIONS'");
+
         Self {
             jwt_key,
             db_url,
             db_max_conns,
+            bcrypt_cost,
         }
     }
 }

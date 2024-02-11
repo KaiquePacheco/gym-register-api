@@ -1,6 +1,10 @@
-use super::super::users;
-use super::custom_errs::sign_in::SignInError;
-use super::dtos::{forms::SignIn, token::TokenContent};
+use std::error::Error;
+
+use super::{
+    super::users,
+    custom_errs::sign_in::SignInError,
+    dtos::{forms::SignIn, token::TokenContent},
+};
 
 use hmac::Hmac;
 use jwt::SignWithKey;
@@ -13,11 +17,11 @@ pub async fn sign_token<'r>(
     key: &Hmac<Sha256>,
 
     conn: Object<AsyncPgConnection>,
-) -> Result<String, SignInError> {
+) -> Result<String, Box<dyn Error>> {
     let found_users = users::utils::find_by_email(conn, sign_in.email).await?;
 
     if found_users.is_empty() {
-        return Err(SignInError::WrongEmail);
+        return Err(Box::new(SignInError::WrongEmail));
     }
 
     for data in found_users {
@@ -31,5 +35,5 @@ pub async fn sign_token<'r>(
         }
     }
 
-    Err(SignInError::WrongPassword)
+    Err(Box::new(SignInError::WrongPassword))
 }

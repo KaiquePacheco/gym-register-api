@@ -22,7 +22,7 @@ pub mod token {
     use rocket::serde::{Deserialize, Serialize};
     use uuid::Uuid;
 
-    use super::super::super::users::dtos::UserData;
+    use super::super::super::users::dtos::User;
 
     #[derive(Serialize, Deserialize)]
     #[serde(crate = "rocket::serde")]
@@ -32,8 +32,8 @@ pub mod token {
         pub email: String,
     }
 
-    impl From<UserData> for TokenContent {
-        fn from(value: UserData) -> Self {
+    impl From<User> for TokenContent {
+        fn from(value: User) -> Self {
             Self {
                 user_id: value.id,
                 username: value.username,

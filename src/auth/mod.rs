@@ -8,14 +8,13 @@ use std::ops::Deref;
 use dtos::forms::{SignIn, SignUp};
 use rocket::{
     form::{Form, Strict},
+    http::Status,
     post,
     response::status,
     State,
 };
 
-use super::config::Configs;
-
-use super::database::ConnectionPool;
+use super::{config::Configs, database::ConnectionPool, users};
 
 #[post("/signin", data = "<sign_in_form>")]
 pub async fn sign_in<'r>(
@@ -36,4 +35,25 @@ pub async fn sign_in<'r>(
 }
 
 #[post("/signup", data = "<sign_up_form>")]
-pub async fn sign_up(sign_up_form: Form<Strict<SignUp<'_>>>) {}
+pub async fn sign_up(
+    pool: &State<ConnectionPool>,
+    configs: &State<Configs>,
+
+    sign_up_form: Form<Strict<SignUp<'_>>>,
+) -> Result<status::Accepted<&'static str>, status::Custom<String>> {
+    let conn = pool.get().await.unwrap();
+
+    let create_user_result = users::utils::create(
+        conn,
+        sign_up_form.username.into(),
+        sign_up_form.email.into(),
+        sign_up_form.password.into(),
+        configs.bcrypt_cost,
+    )
+    .await;
+
+    match create_user_result {
+        Ok(()) => Ok(status::Accepted("User sucessfully created")),
+        Err(e) => Err(status::Custom(Status::InternalServerError, e.to_string())),
+    }
+}
