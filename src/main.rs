@@ -1,16 +1,29 @@
+pub mod config;
 pub mod database;
+pub mod schema;
 
-use dotenvy::dotenv_override;
-use rocket::{get, launch, routes, Rocket};
+pub mod auth;
+pub mod users;
 
-#[get("/")]
-async fn hello_world() -> &'static str {
-    "Hello world!"
-}
+use std::sync::Arc;
+
+use config::Configs;
+use rocket::{launch, routes, Rocket};
+use users::repository::UsersRepository;
 
 #[launch]
-fn rocket() -> _ {
-    let _ = dotenv_override();
+pub fn rocket() -> _ {
+    let configs = Configs::default();
 
-    Rocket::build().mount("/", routes![hello_world])
+    let pool = Arc::new(database::create_connection_pool(&configs));
+
+    let user_repository = UsersRepository(Arc::clone(&pool));
+
+    Rocket::build()
+        .manage(pool)
+        .manage(configs)
+        // Repositories
+        .manage(user_repository)
+        // Routes
+        .mount("/auth", routes![auth::sign_in, auth::sign_up])
 }
