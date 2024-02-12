@@ -5,8 +5,6 @@ use diesel_async::{
 
 use super::config::Configs;
 
-pub type ConnectionPool = Pool<AsyncPgConnection>;
-
 pub fn create_connection_pool(configs: &Configs) -> Pool<AsyncPgConnection> {
     let manager = AsyncDieselConnectionManager::<AsyncPgConnection>::new(&configs.db_url);
 

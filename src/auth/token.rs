@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use super::{
-    super::users,
+    super::users::repository::UsersRepository,
     custom_errs::sign_in::SignInError,
     dtos::{forms::SignIn, token::TokenContent},
 };
@@ -10,15 +10,13 @@ use hmac::Hmac;
 use jwt::SignWithKey;
 use sha2::Sha256;
 
-use diesel_async::{pooled_connection::deadpool::Object, AsyncPgConnection};
+pub async fn sign_token(
+    user_repository: &UsersRepository,
 
-pub async fn sign_token<'r>(
     sign_in: &SignIn<'_>,
     key: &Hmac<Sha256>,
-
-    conn: Object<AsyncPgConnection>,
 ) -> Result<String, Box<dyn Error>> {
-    let found_users = users::utils::find_by_email(conn, sign_in.email).await?;
+    let found_users = user_repository.find_by_email(sign_in.email).await?;
 
     if found_users.is_empty() {
         return Err(Box::new(SignInError::WrongEmail));

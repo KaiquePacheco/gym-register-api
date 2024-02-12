@@ -1,7 +1,6 @@
 #[path = "../src/main.rs"]
 mod application;
 
-#[path = "setup.rs"]
 mod setup;
 
 use rocket::{
